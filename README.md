@@ -1,6 +1,21 @@
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/81314a73-d417-411e-a345-f3b815548eae" width="650" alt="Arduino UNO R4 WiFi">
+  <br><em>Figura 1 - Arduino UNO R4 WiFi (exemplo de placa utilizada).</em>
+</p>
+
 # Documentação (iniciantes) - Leitura de sensores + envio via Wi-Fi (UNO R4 WiFi)
 
 Este projeto lê **temperatura, umidade, pressão e altitude estimada** (sensor **BME280**) e **luminosidade em lux** (sensor **BH1750**) via **I2C**, mostra os valores no **Serial Monitor** e, a cada **10 segundos**, envia um **HTTP POST** com um **JSON** para um servidor na sua rede (ex.: um PC/Raspberry) que pode gravar em MySQL.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/35e4598e-5ea5-4d9d-9080-d385a99d18f1" width="420" alt="Módulo BME280">
+  <br><em>Figura 2 - Sensor BME280 (temperatura, umidade e pressão) em módulo I2C.</em>
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b05143c4-71e2-4604-b5d9-14bbaa93f3f0" width="420" alt="Módulo BH1750">
+  <br><em>Figura 3 - Sensor BH1750 (luminosidade em lux) em módulo I2C.</em>
+</p>
 
 > Placa alvo sugerida pelo código: **Arduino UNO R4 WiFi** (por causa da biblioteca `WiFiS3`).
 
