@@ -1,77 +1,77 @@
-# DocumentaÁ„o (iniciantes) - Leitura de sensores + envio via Wi-Fi (UNO R4 WiFi)
+# Documenta√ß√£o (iniciantes) - Leitura de sensores + envio via Wi-Fi (UNO R4 WiFi)
 
-Este projeto lÍ **temperatura, umidade, press„o e altitude estimada** (sensor **BME280**) e **luminosidade em lux** (sensor **BH1750**) via **I2C**, mostra os valores no **Serial Monitor** e, a cada **10 segundos**, envia um **HTTP POST** com um **JSON** para um servidor na sua rede (ex.: um PC/Raspberry) que pode gravar em MySQL.
+Este projeto l√™ **temperatura, umidade, press√£o e altitude estimada** (sensor **BME280**) e **luminosidade em lux** (sensor **BH1750**) via **I2C**, mostra os valores no **Serial Monitor** e, a cada **10 segundos**, envia um **HTTP POST** com um **JSON** para um servidor na sua rede (ex.: um PC/Raspberry) que pode gravar em MySQL.
 
-> Placa alvo sugerida pelo cÛdigo: **Arduino UNO R4 WiFi** (por causa da biblioteca `WiFiS3`).
+> Placa alvo sugerida pelo c√≥digo: **Arduino UNO R4 WiFi** (por causa da biblioteca `WiFiS3`).
 
 ---
 
-## 1) Componentes (o que È o quÍ)
+## 1) Componentes (o que √© o qu√™)
 
 ### Microcontrolador / placa
-- **Arduino UNO R4 WiFi**: placa com microcontrolador **Renesas RA4M1** + mÛdulo Wi-Fi integrado. Usa a biblioteca `WiFiS3` para rede.
+- **Arduino UNO R4 WiFi**: placa com microcontrolador **Renesas RA4M1** + m√≥dulo Wi-Fi integrado. Usa a biblioteca `WiFiS3` para rede.
 
 ### Sensores (I2C)
-- **BME280 (Bosch)**: mede **temperatura (∞C)**, **umidade (%)** e **press„o (hPa)**. A **altitude (m)** È *calculada* a partir da press„o (n„o È um sensor de altitude real).
+- **BME280 (Bosch)**: mede **temperatura (¬∞C)**, **umidade (%)** e **press√£o (hPa)**. A **altitude (m)** √© *calculada* a partir da press√£o (n√£o √© um sensor de altitude real).
 - **BH1750**: mede **luz ambiente (lux)**.
 
 ---
 
-## 2) LigaÁıes (fiaÁ„o) - I2C
+## 2) Liga√ß√µes (fia√ß√£o) - I2C
 
-Os dois sensores usam **I2C**, ent„o eles compartilham os mesmos fios **SDA** e **SCL**.
+Os dois sensores usam **I2C**, ent√£o eles compartilham os mesmos fios **SDA** e **SCL**.
 
 ### Pinos I2C na placa
-- Use os pinos **marcados na placa como `SDA` e `SCL`** (conector prÛprio do I2C).
-- TambÈm conecte **GND com GND** (terra comum) e **VCC**.
+- Use os pinos **marcados na placa como `SDA` e `SCL`** (conector pr√≥prio do I2C).
+- Tamb√©m conecte **GND com GND** (terra comum) e **VCC**.
 
-### Tabela de ligaÁ„o (BME280 + BH1750 ? UNO R4 WiFi)
+### Tabela de liga√ß√£o (BME280 + BH1750 ? UNO R4 WiFi)
 
 | Sensor | VCC | GND | SDA | SCL |
 |---|---|---|---|---|
 | BME280 | 3.3V (recomendado) | GND | SDA | SCL |
 | BH1750 | 3.3V (recomendado) | GND | SDA | SCL |
 
-#### Importante sobre alimentaÁ„o (3.3V vs 5V)
-- O cÛdigo assume **3.3V** (mensagens de debug tambÈm sugerem isso).
-- Muitos mÛdulos vendidos como ìBME280/BH1750î tÍm **regulador e convers„o de nÌvel** e aceitam 5V, mas **nem todos**.
-- Se vocÍ n„o tiver certeza, use **3.3V** para evitar danos ao sensor.
+#### Importante sobre alimenta√ß√£o (3.3V vs 5V)
+- O c√≥digo assume **3.3V** (mensagens de debug tamb√©m sugerem isso).
+- Muitos m√≥dulos vendidos como ‚ÄúBME280/BH1750‚Äù t√™m **regulador e convers√£o de n√≠vel** e aceitam 5V, mas **nem todos**.
+- Se voc√™ n√£o tiver certeza, use **3.3V** para evitar danos ao sensor.
 
 #### Pull-ups (resistores do I2C)
-- Em I2C, normalmente existem resistores ìpull-upî no SDA/SCL. Muitos mÛdulos j· trazem isso.
-- Se o scanner I2C n„o achar nada, pode ser falta de pull-up, fiaÁ„o errada ou alimentaÁ„o incorreta.
+- Em I2C, normalmente existem resistores ‚Äúpull-up‚Äù no SDA/SCL. Muitos m√≥dulos j√° trazem isso.
+- Se o scanner I2C n√£o achar nada, pode ser falta de pull-up, fia√ß√£o errada ou alimenta√ß√£o incorreta.
 
 ---
 
-## 3) EndereÁos I2C esperados (muito importante)
+## 3) Endere√ßos I2C esperados (muito importante)
 
-O cÛdigo tenta achar e validar os sensores pelos endereÁos mais comuns.
+O c√≥digo tenta achar e validar os sensores pelos endere√ßos mais comuns.
 
 ### BME280
-- EndereÁos tÌpicos: `0x76` ou `0x77`
-- O cÛdigo lÍ o registrador `0xD0` (Chip ID)
+- Endere√ßos t√≠picos: `0x76` ou `0x77`
+- O c√≥digo l√™ o registrador `0xD0` (Chip ID)
   - **BME280 verdadeiro**: Chip ID `0x60`
-- Se n„o inicializar, o programa **para** (fica em loop infinito), porque o BME280 È obrigatÛrio no projeto.
+- Se n√£o inicializar, o programa **para** (fica em loop infinito), porque o BME280 √© obrigat√≥rio no projeto.
 
 ### BH1750
-- EndereÁos tÌpicos: `0x23` (padr„o) ou `0x5C`
-- Pino **ADDR** do mÛdulo define o endereÁo:
+- Endere√ßos t√≠picos: `0x23` (padr√£o) ou `0x5C`
+- Pino **ADDR** do m√≥dulo define o endere√ßo:
   - ADDR em **GND** ? `0x23`
   - ADDR em **VCC** ? `0x5C`
-- Se n„o encontrar, o cÛdigo **n„o para**; apenas mostra um aviso.
+- Se n√£o encontrar, o c√≥digo **n√£o para**; apenas mostra um aviso.
 
 ---
 
 ## 4) Bibliotecas usadas (o que cada `#include` faz)
 
-O topo do cÛdigo tem:
+O topo do c√≥digo tem:
 
 - `#include <Wire.h>`
-  - Biblioteca padr„o do Arduino para comunicaÁ„o **I2C**.
+  - Biblioteca padr√£o do Arduino para comunica√ß√£o **I2C**.
 
 - `#include <Adafruit_BME280.h>`
   - Biblioteca da Adafruit para o sensor **BME280**.
-  - ObservaÁ„o: ao instalar, o Arduino IDE pode pedir dependÍncias como **Adafruit Unified Sensor**.
+  - Observa√ß√£o: ao instalar, o Arduino IDE pode pedir depend√™ncias como **Adafruit Unified Sensor**.
 
 - `#include <BH1750.h>`
   - Biblioteca para o sensor de luz **BH1750** (comum no Library Manager).
@@ -83,14 +83,14 @@ O topo do cÛdigo tem:
   - Cliente HTTP simples (para fazer GET/POST) em cima do `WiFiClient`.
 
 ### Como instalar bibliotecas no Arduino IDE
-1. Arduino IDE ? **Sketch** ? **Include Library** ? **Manage LibrariesÖ**
+1. Arduino IDE ? **Sketch** ? **Include Library** ? **Manage Libraries‚Ä¶**
 2. Pesquise e instale:
    - **Adafruit BME280 Library**
    - **Adafruit Unified Sensor** (se solicitado)
    - **BH1750**
    - **ArduinoHttpClient**
-3. A biblioteca `Wire` j· vem com o core.
-4. `WiFiS3` normalmente vem junto com o core da UNO R4, mas pode aparecer como dependÍncia/instal·vel.
+3. A biblioteca `Wire` j√° vem com o core.
+4. `WiFiS3` normalmente vem junto com o core da UNO R4, mas pode aparecer como depend√™ncia/instal√°vel.
 
 ---
 
@@ -104,45 +104,45 @@ O topo do cÛdigo tem:
 
 ---
 
-## 5) ConfiguraÁıes que vocÍ precisa editar
+## 5) Configura√ß√µes que voc√™ precisa editar
 
-No cÛdigo, edite estas vari·veis:
+No c√≥digo, edite estas vari√°veis:
 
 ### Wi-Fi
 - `WIFI_SSID` ? nome da rede Wi-Fi
 - `WIFI_PASS` ? senha
 
-### Servidor HTTP (onde os dados ser„o enviados)
+### Servidor HTTP (onde os dados ser√£o enviados)
 - `SERVER_HOST` ? IP ou host do servidor na rede local (ex.: `192.168.0.50`)
 - `SERVER_PORT` ? porta (geralmente `80` para HTTP)
 - `SERVER_PATH` ? caminho do endpoint (ex.: `/ingest.php`)
 
 ### Chave simples (API Key)
 - `API_KEY` ? uma senha simples enviada no header `X-API-Key`
-  - Serve para evitar que qualquer dispositivo ìaleatÛrioî poste dados.
-  - N„o È seguranÁa forte; para internet use HTTPS e autenticaÁ„o melhor.
+  - Serve para evitar que qualquer dispositivo ‚Äúaleat√≥rio‚Äù poste dados.
+  - N√£o √© seguran√ßa forte; para internet use HTTPS e autentica√ß√£o melhor.
 
 ---
 
-## 6) O que o cÛdigo faz (passo a passo)
+## 6) O que o c√≥digo faz (passo a passo)
 
 ### `setup()` (roda 1 vez ao ligar)
 1. Abre o Serial a `9600`.
 2. Tenta conectar no Wi-Fi, mas **sem travar** o programa:
-   - Ele espera ~5 segundos por uma conex„o inicial.
-   - Se n„o conectar, segue lendo sensores e tenta reconectar ìem backgroundî.
+   - Ele espera ~5 segundos por uma conex√£o inicial.
+   - Se n√£o conectar, segue lendo sensores e tenta reconectar ‚Äúem background‚Äù.
 3. Inicializa I2C (`Wire.begin()`) e roda um **scanner I2C**.
 4. Inicializa o **BME280**:
    - Testa `0x76` e `0x77`
    - Confere Chip ID `0x60`
-   - Se falhar, para o programa (BME280 È obrigatÛrio).
+   - Se falhar, para o programa (BME280 √© obrigat√≥rio).
 5. Configura amostragem do BME280 (modo normal, filtros etc.).
-6. Inicializa o **BH1750** em `0x23` e, se n„o achar, tenta `0x5C`.
+6. Inicializa o **BH1750** em `0x23` e, se n√£o achar, tenta `0x5C`.
 
 ### `loop()` (roda para sempre)
-1. LÍ:
-   - Temperatura (∞C)
-   - Press„o (hPa)
+1. L√™:
+   - Temperatura (¬∞C)
+   - Press√£o (hPa)
    - Umidade (%)
    - Altitude estimada (m)
    - Luz (lux)
@@ -157,8 +157,8 @@ No cÛdigo, edite estas vari·veis:
 
 ## 7) Formato do envio HTTP (para quem vai fazer o servidor)
 
-### RequisiÁ„o
-- MÈtodo: `POST`
+### Requisi√ß√£o
+- M√©todo: `POST`
 - URL: `http://SERVER_HOST:SERVER_PORT/SERVER_PATH`
 - Headers:
   - `Content-Type: application/json`
@@ -179,64 +179,64 @@ Exemplo de JSON enviado:
 ```
 
 ### Resposta
-O cÛdigo imprime:
-- `Status HTTP: <cÛdigo>` (ex.: 200)
+O c√≥digo imprime:
+- `Status HTTP: <c√≥digo>` (ex.: 200)
 - `Resposta: <texto>` (se existir)
 
 ---
 
-## 8) Exemplo mÌnimo de servidor (opcional)
+## 8) Exemplo m√≠nimo de servidor (opcional)
 
-A ideia do `ingest.php` È:
+A ideia do `ingest.php` √©:
 1. Ler o header `X-API-Key` e comparar com a sua chave.
 2. Ler o corpo JSON (`php://input`) e fazer `json_decode`.
 3. Inserir no banco (MySQL) e responder `200 OK`.
 
 ---
 
-## 9) Dicas de uso e diagnÛstico (troubleshooting)
+## 9) Dicas de uso e diagn√≥stico (troubleshooting)
 
 ### Serial Monitor
 - Configure o Serial Monitor para **9600 baud**.
-- No inÌcio, vocÍ deve ver:
-  - ìEscaneando I2CÖî
-  - Um ou mais endereÁos encontrados (por exemplo `0x76`, `0x23`)
-  - ìBME280 OK (0x76)î
+- No in√≠cio, voc√™ deve ver:
+  - ‚ÄúEscaneando I2C‚Ä¶‚Äù
+  - Um ou mais endere√ßos encontrados (por exemplo `0x76`, `0x23`)
+  - ‚ÄúBME280 OK (0x76)‚Äù
 
-### Caracteres ìquebradosî (√£, √≥, etc.) no Serial
-Se algumas mensagens aparecerem com acentos estranhos, isso normalmente È **codificaÁ„o do arquivo** (salvo como ANSI/Latin-1 em vez de UTF-8, por exemplo).
+### Caracteres ‚Äúquebrados‚Äù (√É¬£, √É¬≥, etc.) no Serial
+Se algumas mensagens aparecerem com acentos estranhos, isso normalmente √© **codifica√ß√£o do arquivo** (salvo como ANSI/Latin-1 em vez de UTF-8, por exemplo).
 - Tente re-salvar o sketch no editor como **UTF-8**.
-- Alternativa simples: trocar textos com acento por versıes sem acento.
+- Alternativa simples: trocar textos com acento por vers√µes sem acento.
 
-### ìNenhum dispositivo I2C encontradoî
+### ‚ÄúNenhum dispositivo I2C encontrado‚Äù
 Cheque:
 - VCC e GND corretos (terra comum)
 - Pinos SDA/SCL corretos (os pinos dedicados I2C da placa)
-- Sensor alimentado (LED do mÛdulo, se existir)
+- Sensor alimentado (LED do m√≥dulo, se existir)
 - Pull-ups no barramento
 
-### BME280 n„o inicializa
-- O mÛdulo pode ser **BMP280** (parecido, mas Chip ID diferente).
-- O endereÁo pode ser 0x76/0x77 e a fiaÁ„o precisa estar correta.
+### BME280 n√£o inicializa
+- O m√≥dulo pode ser **BMP280** (parecido, mas Chip ID diferente).
+- O endere√ßo pode ser 0x76/0x77 e a fia√ß√£o precisa estar correta.
 
-### BH1750 n„o encontrado
+### BH1750 n√£o encontrado
 - Verifique o pino **ADDR** (GND ? 0x23, VCC ? 0x5C)
-- Se n„o tiver o BH1750 conectado, o resto do projeto continua.
+- Se n√£o tiver o BH1750 conectado, o resto do projeto continua.
 
-### Wi-Fi n„o conecta
+### Wi-Fi n√£o conecta
 - Confirme SSID/senha
-- Rede 2.4 GHz vs 5 GHz (depende do roteador e suporte do mÛdulo)
-- O cÛdigo tenta reconectar a cada **15 s** (`WIFI_TENTAR_NOVAMENTE_MS`).
+- Rede 2.4 GHz vs 5 GHz (depende do roteador e suporte do m√≥dulo)
+- O c√≥digo tenta reconectar a cada **15 s** (`WIFI_TENTAR_NOVAMENTE_MS`).
 
-### SeguranÁa
-- Esse modelo È pensado para **rede local**.
-- Para expor na internet, evite HTTP simples; prefira HTTPS e autenticaÁ„o adequada.
+### Seguran√ßa
+- Esse modelo √© pensado para **rede local**.
+- Para expor na internet, evite HTTP simples; prefira HTTPS e autentica√ß√£o adequada.
 
 ---
 
-## 10) PersonalizaÁıes r·pidas
+## 10) Personaliza√ß√µes r√°pidas
 
 - Intervalo de envio: altere `INTERVALO_POST_MS` (ex.: `30000` para 30 s).
 - Nome do dispositivo: altere o campo `"device"` no JSON.
-- Altitude mais realista: ajuste `SEALEVELPRESSURE_HPA` para a press„o ao nÌvel do mar na sua regi„o.
+- Altitude mais realista: ajuste `SEALEVELPRESSURE_HPA` para a press√£o ao n√≠vel do mar na sua regi√£o.
 
