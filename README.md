@@ -1,4 +1,4 @@
-# Documentação (iniciantes) — Leitura de sensores + envio via Wi?Fi (UNO R4 WiFi)
+# Documentação (iniciantes) - Leitura de sensores + envio via Wi-Fi (UNO R4 WiFi)
 
 Este projeto lê **temperatura, umidade, pressão e altitude estimada** (sensor **BME280**) e **luminosidade em lux** (sensor **BH1750**) via **I2C**, mostra os valores no **Serial Monitor** e, a cada **10 segundos**, envia um **HTTP POST** com um **JSON** para um servidor na sua rede (ex.: um PC/Raspberry) que pode gravar em MySQL.
 
@@ -9,7 +9,7 @@ Este projeto lê **temperatura, umidade, pressão e altitude estimada** (sensor **
 ## 1) Componentes (o que é o quê)
 
 ### Microcontrolador / placa
-- **Arduino UNO R4 WiFi**: placa com microcontrolador **Renesas RA4M1** + módulo Wi?Fi integrado. Usa a biblioteca `WiFiS3` para rede.
+- **Arduino UNO R4 WiFi**: placa com microcontrolador **Renesas RA4M1** + módulo Wi-Fi integrado. Usa a biblioteca `WiFiS3` para rede.
 
 ### Sensores (I2C)
 - **BME280 (Bosch)**: mede **temperatura (°C)**, **umidade (%)** e **pressão (hPa)**. A **altitude (m)** é *calculada* a partir da pressão (não é um sensor de altitude real).
@@ -17,7 +17,7 @@ Este projeto lê **temperatura, umidade, pressão e altitude estimada** (sensor **
 
 ---
 
-## 2) Ligações (fiação) — I2C
+## 2) Ligações (fiação) - I2C
 
 Os dois sensores usam **I2C**, então eles compartilham os mesmos fios **SDA** e **SCL**.
 
@@ -37,9 +37,9 @@ Os dois sensores usam **I2C**, então eles compartilham os mesmos fios **SDA** e 
 - Muitos módulos vendidos como “BME280/BH1750” têm **regulador e conversão de nível** e aceitam 5V, mas **nem todos**.
 - Se você não tiver certeza, use **3.3V** para evitar danos ao sensor.
 
-#### Pull?ups (resistores do I2C)
-- Em I2C, normalmente existem resistores “pull?up” no SDA/SCL. Muitos módulos já trazem isso.
-- Se o scanner I2C não achar nada, pode ser falta de pull?up, fiação errada ou alimentação incorreta.
+#### Pull-ups (resistores do I2C)
+- Em I2C, normalmente existem resistores “pull-up” no SDA/SCL. Muitos módulos já trazem isso.
+- Se o scanner I2C não achar nada, pode ser falta de pull-up, fiação errada ou alimentação incorreta.
 
 ---
 
@@ -77,7 +77,7 @@ O topo do código tem:
   - Biblioteca para o sensor de luz **BH1750** (comum no Library Manager).
 
 - `#include <WiFiS3.h>`
-  - Biblioteca de Wi?Fi usada na **UNO R4 WiFi**.
+  - Biblioteca de Wi-Fi usada na **UNO R4 WiFi**.
 
 - `#include <ArduinoHttpClient.h>`
   - Cliente HTTP simples (para fazer GET/POST) em cima do `WiFiClient`.
@@ -108,8 +108,8 @@ O topo do código tem:
 
 No código, edite estas variáveis:
 
-### Wi?Fi
-- `WIFI_SSID` ? nome da rede Wi?Fi
+### Wi-Fi
+- `WIFI_SSID` ? nome da rede Wi-Fi
 - `WIFI_PASS` ? senha
 
 ### Servidor HTTP (onde os dados serão enviados)
@@ -128,7 +128,7 @@ No código, edite estas variáveis:
 
 ### `setup()` (roda 1 vez ao ligar)
 1. Abre o Serial a `9600`.
-2. Tenta conectar no Wi?Fi, mas **sem travar** o programa:
+2. Tenta conectar no Wi-Fi, mas **sem travar** o programa:
    - Ele espera ~5 segundos por uma conexão inicial.
    - Se não conectar, segue lendo sensores e tenta reconectar “em background”.
 3. Inicializa I2C (`Wire.begin()`) e roda um **scanner I2C**.
@@ -147,8 +147,8 @@ No código, edite estas variáveis:
    - Altitude estimada (m)
    - Luz (lux)
 2. Imprime tudo no Serial Monitor.
-3. Tenta manter o Wi?Fi conectado chamando `garantirWifiConectado()` a cada ciclo.
-4. A cada **10 s** (`INTERVALO_POST_MS`), se Wi?Fi estiver conectado:
+3. Tenta manter o Wi-Fi conectado chamando `garantirWifiConectado()` a cada ciclo.
+4. A cada **10 s** (`INTERVALO_POST_MS`), se Wi-Fi estiver conectado:
    - Monta um JSON
    - Envia via **HTTP POST** para `SERVER_PATH`
    - Mostra o **status HTTP** e a resposta do servidor
@@ -192,8 +192,6 @@ A ideia do `ingest.php` é:
 2. Ler o corpo JSON (`php://input`) e fazer `json_decode`.
 3. Inserir no banco (MySQL) e responder `200 OK`.
 
-Se você quiser, eu posso criar um exemplo completo de `ingest.php` + SQL de tabela (MySQL) compatível com esse JSON.
-
 ---
 
 ## 9) Dicas de uso e diagnóstico (troubleshooting)
@@ -206,8 +204,8 @@ Se você quiser, eu posso criar um exemplo completo de `ingest.php` + SQL de tabe
   - “BME280 OK (0x76)”
 
 ### Caracteres “quebrados” (Ã£, Ã³, etc.) no Serial
-Se algumas mensagens aparecerem com acentos estranhos, isso normalmente é **codificação do arquivo** (salvo como ANSI/Latin?1 em vez de UTF?8, por exemplo).
-- Tente re-salvar o sketch no editor como **UTF?8**.
+Se algumas mensagens aparecerem com acentos estranhos, isso normalmente é **codificação do arquivo** (salvo como ANSI/Latin-1 em vez de UTF-8, por exemplo).
+- Tente re-salvar o sketch no editor como **UTF-8**.
 - Alternativa simples: trocar textos com acento por versões sem acento.
 
 ### “Nenhum dispositivo I2C encontrado”
@@ -215,7 +213,7 @@ Cheque:
 - VCC e GND corretos (terra comum)
 - Pinos SDA/SCL corretos (os pinos dedicados I2C da placa)
 - Sensor alimentado (LED do módulo, se existir)
-- Pull?ups no barramento
+- Pull-ups no barramento
 
 ### BME280 não inicializa
 - O módulo pode ser **BMP280** (parecido, mas Chip ID diferente).
@@ -225,7 +223,7 @@ Cheque:
 - Verifique o pino **ADDR** (GND ? 0x23, VCC ? 0x5C)
 - Se não tiver o BH1750 conectado, o resto do projeto continua.
 
-### Wi?Fi não conecta
+### Wi-Fi não conecta
 - Confirme SSID/senha
 - Rede 2.4 GHz vs 5 GHz (depende do roteador e suporte do módulo)
 - O código tenta reconectar a cada **15 s** (`WIFI_TENTAR_NOVAMENTE_MS`).
